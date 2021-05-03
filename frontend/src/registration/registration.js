@@ -85,6 +85,8 @@ function Registration({ update }) {
 
   const [checkBox, setCheckBox] = useState(false);
 
+  const [changedEmail, setChangedEmail] = useState(false);
+
   // const useStyles = makeStyles((theme) => ({
   //   button: {
   //     marginTop: theme.spacing(3),
@@ -111,6 +113,9 @@ function Registration({ update }) {
       guardians[i][name] = value;
       setForm({ ...form, guardians });
       return;
+    }
+    if (name === "email") {
+      setChangedEmail(true);
     }
     const input = {};
     input[name] = value;
@@ -333,11 +338,10 @@ function Registration({ update }) {
    * Handles the event of the form submission. Prevents the page from refreshing.
    * If property 'update' is true, return to the login page.
    */
-  const handleFormSubmit = async (verification_code) => {
-    //e.preventDefault();
-
-    console.log("SUBMIT");
-    console.log(verification_code);
+  const handleFormSubmit = async (e, verification_code) => {
+    if (update) {
+      e.preventDefault();
+    }
     const {
       email,
       password,
@@ -362,6 +366,18 @@ function Registration({ update }) {
     }
     if (update) {
       try {
+        if (changedEmail) {
+          setChangedEmail(false);
+          await updateEmail({
+            email,
+          });
+        }
+      } catch (error) {
+        alert("Email " + email + " is already taken.\n");
+        console.log(error.response);
+        return;
+      }
+      try {
         await updateProfile({
           email,
           guardians,
@@ -377,9 +393,9 @@ function Registration({ update }) {
             password: newpassword,
           });
         }
-        await updateEmail({
-          email,
-        });
+        // await updateEmail({
+        //   email,
+        // });
       } catch (error) {
         console.log(error.response);
       }
@@ -393,7 +409,7 @@ function Registration({ update }) {
           mailing_lists,
         });
         setAuth({ userLoggedIn: isLoggedIn(), role: loggedInRole() });
-        history.push("/profile");
+        history.push("/meetings");
       } catch (error) {
         console.log(error.response);
         return -1;
@@ -542,6 +558,9 @@ function Registration({ update }) {
       <p className="regNote">
         Fill in all fields for each participating student
       </p>
+      <p className="regNote">
+        At least one student must be listed below at all times
+      </p>
       <div id="sList">{studentList}</div>
       <AddNewStudent handleAddStudent={handleAddStudent} />
       <br />
@@ -552,6 +571,9 @@ function Registration({ update }) {
       </h3>
       <p className="regNote">
         Fill in all guardian fields for emergency contact purposes
+      </p>
+      <p className="regNote">
+        At least one guardian must be listed below at all times
       </p>
       <p className="regNote">
         NOTE: <b>Phone numbers</b> for guardians must be at least 10 digits long

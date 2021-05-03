@@ -86,7 +86,6 @@ function Login(props) {
         />
       </label>
       <div>
-        <p id="fgtPasswrd">Forget password?</p>
         <p id="signUp" onClick={handleSignup}>
           Signup
         </p>

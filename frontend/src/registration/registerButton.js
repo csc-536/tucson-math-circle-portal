@@ -59,7 +59,7 @@ const RegisterButton = ({
 
   const handleValidate = () => {
     console.log(input);
-    regAction(input).then((result) => {
+    regAction(0, input).then((result) => {
       if (result == -1) {
         alert("Incorrect four digit code");
         return;
